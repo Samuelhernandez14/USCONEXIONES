@@ -9,14 +9,36 @@ from PIL import Image
 import cv2
 import numpy as np
 import re
+
+# ============================================
+# CONFIGURACIÓN DE TESSERACT PARA WINDOWS
+# ============================================
+# Si Tesseract está instalado pero Python no lo encuentra,
+# descomenta y ajusta esta línea con la ruta correcta:
+
 TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+if os.path.exists(TESSERACT_PATH):
+    pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+    print(f"✅ Tesseract configurado en: {TESSERACT_PATH}")
+else:
+    print("⚠️  Tesseract no encontrado en la ruta configurada")
+    print(f"   Buscado en: {TESSERACT_PATH}")
+    print("   Ajusta la variable TESSERACT_PATH en ocr_processor.py")
+
+# ============================================
 
 class OCRProcessor:
     def __init__(self):
         """Inicializar procesador OCR"""
-        if not os.path.exists(TESSERACT_PATH):
-            raise FileNotFoundError("Tesseract no encontrado en la ruta configurada")
-        pass
+        # Verificar que Tesseract esté disponible
+        try:
+            pytesseract.get_tesseract_version()
+        except Exception as e:
+            raise FileNotFoundError(
+                f"Tesseract no encontrado. Error: {str(e)}\n"
+                f"Instala Tesseract o configura la ruta en TESSERACT_PATH"
+            )
     
     def preprocess_image(self, image_path):
         """
@@ -231,29 +253,44 @@ class OCRProcessor:
 # Función de prueba
 if __name__ == "__main__":
     # Ejemplo de uso
-    ocr = OCRProcessor()
+    print("="*60)
+    print("TEST DE OCR PROCESSOR")
+    print("="*60)
     
-    # Simular texto extraído
-    sample_text = """
-    FORMULARIO DE USUARIO
-    
-    Tipo de Documento: CC
-    Número: 1234567890
-    Nombre Completo: Juan Carlos Pérez Rodríguez
-    Email: juan.perez@empresa.com
-    Rol: Administrador
-    Área: Tecnología
-    """
-    
-    print("Texto de ejemplo:")
-    print(sample_text)
-    print("\n" + "="*50 + "\n")
-    
-    # Simular extracción (normalmente usarías extract_user_data con ruta de imagen)
-    print("Datos que serían extraídos:")
-    print("- Tipo Doc: CC")
-    print("- Número: 1234567890")
-    print("- Nombre: Juan Carlos Pérez Rodríguez")
-    print("- Email: juan.perez@empresa.com")
-    print("- Rol: Administrador")
-    print("- Área: Tecnología")
+    try:
+        ocr = OCRProcessor()
+        print("✅ OCRProcessor inicializado correctamente")
+        print(f"✅ Tesseract versión: {pytesseract.get_tesseract_version()}")
+        
+        # Simular texto extraído
+        sample_text = """
+        FORMULARIO DE USUARIO
+        
+        Tipo de Documento: CC
+        Número: 1234567890
+        Nombre Completo: Juan Carlos Pérez Rodríguez
+        Email: juan.perez@empresa.com
+        Rol: Administrador
+        Área: Tecnología
+        """
+        
+        print("\nTexto de ejemplo:")
+        print(sample_text)
+        print("\n" + "="*60 + "\n")
+        
+        print("Datos que serían extraídos:")
+        print("- Tipo Doc: CC")
+        print("- Número: 1234567890")
+        print("- Nombre: Juan Carlos Pérez Rodríguez")
+        print("- Email: juan.perez@empresa.com")
+        print("- Rol: Administrador")
+        print("- Área: Tecnología")
+        
+        print("\n✅ Todo funcionando correctamente")
+        
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        print("\nVerifica:")
+        print("1. Tesseract está instalado")
+        print("2. La ruta TESSERACT_PATH es correcta")
+        print("3. Tesseract está en el PATH del sistema")

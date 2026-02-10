@@ -35,7 +35,7 @@ def check_dependencies():
         'cv2': 'opencv-python',
         'pytesseract': 'pytesseract',
         'mysql.connector': 'mysql-connector-python',
-        'selenium': 'selenium',
+        'playwright.sync_api': 'playwright',
         'dotenv': 'python-dotenv'
     }
     
@@ -50,6 +50,31 @@ def check_dependencies():
             all_ok = False
     
     return all_ok
+
+def check_playwright_browsers():
+    """Verificar que los navegadores de Playwright estén instalados"""
+    print_header("2b. Verificando navegadores de Playwright")
+    
+    try:
+        from playwright.sync_api import sync_playwright
+        
+        print("✅ Playwright instalado")
+        print("\nIntentando verificar navegadores...")
+        
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                browser.close()
+                print("✅ Chromium instalado y funcional")
+                return True
+        except Exception as e:
+            print(f"⚠️  Chromium no disponible: {str(e)}")
+            print("\n   Solución: Ejecuta 'playwright install chromium'")
+            return False
+            
+    except ImportError:
+        print("❌ Playwright no está instalado")
+        return False
 
 def check_tesseract():
     """Verificar instalación de Tesseract OCR"""
@@ -67,6 +92,8 @@ def check_tesseract():
         print("   - Windows: Descargar de https://github.com/UB-Mannheim/tesseract/wiki")
         print("   - Linux: sudo apt install tesseract-ocr")
         print("   - macOS: brew install tesseract")
+        print("\n   Si ya está instalado, configura la ruta en ocr_processor.py:")
+        print("   pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'")
         return False
 
 def check_env_file():
@@ -83,7 +110,7 @@ def check_env_file():
         
         required_vars = [
             'DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD',
-            'PLATFORM_URL', 'LOGIN_URL', 'PLATFORM_USER', 'PLATFORM_PASSWORD'
+            'PLATFORM_URL', 'PLATFORM_USER', 'PLATFORM_PASSWORD'
         ]
         
         missing = []
@@ -141,35 +168,9 @@ def check_database():
         print("   - Base de datos 'usuarios_db' fue creada")
         return False
 
-def check_chrome():
-    """Verificar disponibilidad de Chrome/Chromium"""
-    print_header("6. Verificando ChromeDriver para Selenium")
-    
-    try:
-        from selenium import webdriver
-        from selenium.webdriver.chrome.options import Options
-        
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        
-        driver = webdriver.Chrome(options=chrome_options)
-        driver.quit()
-        
-        print("✅ ChromeDriver funcional")
-        return True
-        
-    except Exception as e:
-        print(f"⚠️  ChromeDriver no disponible: {str(e)}")
-        print("\n   Solución:")
-        print("   - Se instalará automáticamente con webdriver-manager")
-        print("   - O descarga manual de: https://chromedriver.chromium.org/")
-        return False
-
 def check_modules():
     """Verificar que los módulos personalizados se importen correctamente"""
-    print_header("7. Verificando módulos del proyecto")
+    print_header("6. Verificando módulos del proyecto")
     
     modules = [
         ('user_manager_app', 'Aplicación principal'),
@@ -223,10 +224,10 @@ def main():
     
     results['Python'] = check_python_version()
     results['Dependencias'] = check_dependencies()
+    results['Navegadores Playwright'] = check_playwright_browsers()
     results['Tesseract'] = check_tesseract()
     results['Configuración'] = check_env_file()
     results['Base de datos'] = check_database()
-    results['ChromeDriver'] = check_chrome()
     results['Módulos'] = check_modules()
     
     print_summary(results)

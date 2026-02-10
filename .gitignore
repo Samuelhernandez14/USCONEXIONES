@@ -1,0 +1,59 @@
+# Variables de entorno y configuración
+.env
+config.ini
+
+# Entorno virtual de Python
+venv/
+env/
+ENV/
+.venv
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Logs
+*.log
+logs/
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Imágenes de prueba (si no quieres subirlas)
+test_images/
+samples/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales
+*.tmp
+temp/
+tmp/
+
+# Capturas de pantalla
+screenshots/
+
+# ChromeDriver y navegadores
+chromedriver
+chromedriver.exe
+geckodriver
+geckodriver.exe
+
+# Backups
+*.bak
+backup/

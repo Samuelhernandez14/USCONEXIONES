@@ -3,17 +3,19 @@ Módulo de procesamiento OCR para extraer datos de usuarios de imágenes
 Soporta extracción de: tipo de documento, número, nombre, email, rol, área
 """
 
+import os
 import pytesseract
 from PIL import Image
 import cv2
 import numpy as np
 import re
+TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 class OCRProcessor:
     def __init__(self):
         """Inicializar procesador OCR"""
-        # Configurar pytesseract (ajustar ruta si es necesario)
-        # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Windows
+        if not os.path.exists(TESSERACT_PATH):
+            raise FileNotFoundError("Tesseract no encontrado en la ruta configurada")
         pass
     
     def preprocess_image(self, image_path):
